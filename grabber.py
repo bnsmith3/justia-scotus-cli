@@ -76,7 +76,7 @@ def get_opinions(year: int, output_dir: str) -> None:
         ops.extend(get_case_opinions(case['url']))
 
     DataFrame(ops).to_parquet(f'{output_dir}/{year}_opinions.parquet')
-    click.echo(f'Metadata on {len(ops):,} opinions were found and written to disk.')
+    click.echo(f'{len(ops):,} opinions were found and written to disk.')
 
 if __name__=="__main__":
     cli()
