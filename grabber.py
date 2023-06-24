@@ -33,14 +33,14 @@ def get_case_opinions(url: str) -> List[Dict[str, str]]:
     """Get the opinions on the page with the given url."""
     resp = requests.get(url)
     page_content = bs(resp.content, 'html.parser')
-    links = page_content.find(id='tab-opinion').find_all('li', 'nav-item')
+    links = page_content.find(id='tab-opinion').find_all('a', 'nav-item')
 
     opinions = []
     for link in links:
-        url_suffix = link.find('a')['href']
+        url_suffix = link['href']
         opinions.append({'url': f'{url}{url_suffix}', \
                          'title': sub(r'\s\s+', r' ', \
-                                      link.find('a').text.strip()), \
+                                      link.text.strip()), \
                          'opinion': sub(r'\s\s+', r' ', \
                                         page_content.find(id=url_suffix[1:]).text.strip())})
     return opinions
@@ -65,7 +65,7 @@ def get_cases(year: int, output_loc: click.File) -> None:
 @click.option('-o', '--output_dir', type=str, \
               help='The directory in which to save the results')
 def get_opinions(year: int, output_dir: str) -> None:
-    """Save metadata on the opinions in the given year to file."""
+    """Save metadata on the cases and the associated opinions in the given year to file."""
     cases = get_cases_by_year(year)
     DataFrame(cases).to_parquet(f'{output_dir}/{year}_cases.parquet')
     click.echo(f'Metadata on {len(cases):,} cases were found and written to disk.')
